@@ -1,0 +1,504 @@
+1. 파이썬 - 아나콘다 3.8.x 
+2. 그래픽 드라이버 설치 - Nvidia RTX 2080 / 496.76
+3. Cuda 11.1 Update 1 설치(visual studio int.. 빼고 설치)
+4. CuDNN v8.1.1 for CuDA 11.0,11.1 and 11.2 설치(c: 프로그램 NVIDIA GPU Computing Toolkit 폴더안에 복사) 
+5. Tensorflow 2.4.1 설치 / pip설치
+cmd>>>pip install tensorflow-gpu==2.4.1
+py>>>import tensorflow as tf
+6. Visual Studio Code 확장앱 1)python, 2)1)python for VSCode 3)python Extended 4)python Extention pack 
+
+===============
+수학통계는 따로 수업하지 않음
+인공지능은 1차 함수 Y=wX+b 2차 이상은 미분해 1차로 만들어서 (weight:가속값) 최소의 Loss, 최적의 W값을 구하는것이 목적 (b:bias:절편)
+
+===============
+Deep learning < ML < AI 
+
+===============
+https://dacon.io/  #데이터대회
+
+===============
+naming rule :
+py>> add Money  === add 변수는 첫글자 소문자, Money 연결변수 카멜케이스 대문자 사용
+c>> add_money === 변수연결은 언더바 _ 사용
+===============
+
+
+==========================
+==========================
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+#1. 데이터
+x = np.array([1,2,3])
+y = np.array([1,2,3])
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(1, input_dim=1))
+
+#3. 컴파일, 훈련
+
+model.compile(loss='mse', optimizer='adam') 
+#loss값은 작을수록 좋다, loss에 값을 감축시키는 역할을 해줌(optimizer)
+
+model.fit(x, y, epochs=6000, batch_size=1) 
+#epochs 훈련횟수 #batch 한번의 batch마다 주어지는 데이터 샘플 size, batch는 나눠진 데이터셋 #interation은 epoch를 나누어서 실행하는 횟수
+
+
+#4. 평가, 예측
+loss = model.evaluate(x, y)
+print('loss : ',loss)
+result = model.predict([4])
+print('4의 예측값 : ', result)
+=================================
+=================================
+
+###### DEEP Learning 추가 ##########
+
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+#1. 데이터
+x = np.array([1,2,3])
+y = np.array([1,2,3])
+# 이 데이터로 훈련해서 최소의 Loss값을 구해보자
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(5, input_dim=1))
+model.add(Dense(3))             #히든레이어는 값을 모른다
+model.add(Dense(4))             #하이퍼파라미터튜닝 - 히든레이어값 수정
+model.add(Dense(2))
+model.add(Dense(1))
+
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam') 
+model.fit(x, y, epochs=100, batch_size=1) 
+#에포크:훈련횟수 
+#배치:훈련간격, 좁을수록 훈련량이 많다. 단 배치값은 데이터의 크기를 넘어갈수 없고 과적합화될 우려가 있다.
+
+#loss값은 작을수록 좋다, loss에 값을 감축시키는 역할을 해줌(optimizer)
+#epochs 훈련횟수 #batch 한번의 batch마다 주어지는 데이터 샘플 size, batch는 나눠진 데이터셋 
+#interation은 epoch를 나누어서 실행하는 횟수
+
+#4. 평가, 예측
+loss = model.evaluate(x, y)
+print('loss : ',loss)
+result = model.predict([4])
+print('4의 예측값 : ', result)
+
+"""
+loss :  8.8690927668722e-07
+4의 예측값 :  [[4.002]]
+레거시안러닝보다 딥러닝이 훨씬 효율적이고 값이 좋게 나온다
+"""
+
+==================================================
+==================================================
+
+### 행렬  ###
+
+import numpy as np
+
+a1=np.array([[1,2],[3,4],[5,6]]) #(3,2) 2개짜리가 3개
+a2=np.array([[1,2,3],[4,5,6]])   #(2,3) 3개짜리가 2개
+a3=np.array([[[1],[2],[3]],[[4],[5],[6]]]) #(2,3,1) 1개짜리가 3묶음, 그 묶음이 2개
+a4=np.array([[[1,2],[3,4],[5,6]]]) #(1,3,2) 2개짜리가 3묶음, 그 묶음이 1개
+a5=np.array([[[1,2,3]],[[4,5,6]]])  #(2,1,3) 3개짜리가 1묶음, 그 묶음이 2개
+a6=np.array([1,2,3,4,5,6]) #(5, ) 
+a7=np.array([[[1,2,3],[4,5,6],[7,8,9],[10,11,12]]]) #3개짜리가 4묶음, 그 묶음이1개
+
+
+print(a1.shape)
+print(a2.shape)
+print(a3.shape)
+print(a4.shape)
+print(a5.shape)
+print(a6.shape)
+print(a7.shape)
+
+
+(3, 2)
+(2, 3)
+(2, 3, 1)
+(1, 3, 2)
+(2, 1, 3)
+(6,)
+(1, 4, 3)
+
+====================================================
+====================================================
+
+
+import numpy as np
+from tensorflow.keras import models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+#1. 데이터
+x = np.array([[1, 2,   3,   4,   5,   6,   7,   8,   9,   10], 
+              [1, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.5, 1.4, 1.3]])
+y = np.array([11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+x = np.transpose(x)
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(100, input_dim=2))
+model.add(Dense(50))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam') 
+model.fit(x, y, epochs=100, batch_size=1) 
+
+#4. 평가, 예측
+loss = model.evaluate(x,y)
+print('loss : ', loss)
+y_predict = model.predict([[10, 1.3]])
+print('[10, 1.3]의 예측값 :', y_predict)
+
+'''
+loss :  0.0004832086560782045
+[10, 1.3]의 예측값 : [[20.002756]]
+'''
+
+===============================================
+===============================================
+
+
+import numpy as np
+from tensorflow.keras import models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+#1. 데이터
+x = np.array([[1,  2,   3,   4,   5,   6,   7,   8,   9,   10 ], 
+              [1,  1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.5, 1.4, 1.3],
+              [10, 9,   8,   7,   6,   5,   4,   3,   2,   1  ]])
+y = np.array([ 11, 12,  13,  14,  15,  16,  17,  18,  19,  20 ])
+x = np.transpose(x)
+
+# x = x.T 
+# x = np.transpose(x)    #행과 열이 바뀐다
+# x = x.reshape(10,2)    #테이터 배열이 바뀐다
+               
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(100, input_dim=3))
+model.add(Dense(50))
+model.add(Dense(130))
+model.add(Dense(80))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x, y, epochs=500, batch_size=1)
+
+#4. 평가, 예측
+loss = model.evaluate(x,y)
+print('loss : ', loss)
+y_predict = model.predict([[10, 1.3, 1]])  
+# x의 인풋 디멘션과 열이 같아야 한다 
+#열우선행무시
+print('[10, 1.3, 1]의 예측값 :', y_predict)
+
+'''
+loss값 :  0.010763260535895824
+[10, 1.3, 1]의 예측값 : [[ 8.1277275  0.4601313 -7.28507  ]]
+'''
+
+==================================================
+==================================================
+
+
+import numpy as np
+from tensorflow.keras import models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+#1. 데이터
+x = np.array([range(10)])  # (10, )
+print(x)
+x = np.transpose(x)
+print(x.shape)   # (10, 3)
+
+y = np.array([[1,  2,   3,   4,   5,   6,   7,   8,   9,   10 ], 
+              [1,  1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.5, 1.4, 1.3],
+              [10, 9,   8,   7,   6,   5,   4,   3,   2,   1  ]])   
+y = np.transpose(y)
+print(y.shape)
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(1, input_dim=1))
+model.add(Dense(50))
+model.add(Dense(130))
+model.add(Dense(80))
+model.add(Dense(3))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x, y, epochs=100, batch_size=1)
+
+#4. 평가, 예측
+loss = model.evaluate(x,y)
+print('loss값 : ', loss)
+y_predict = model.predict([[9]])  # x의 인풋 디멘션과 열이 같아야 한다 #열우선행무시
+print('[10, 1.3, 1]의 예측값 :', y_predict)
+
+'''
+loss값 :  0.015184789896011353
+[10, 1.3, 1]의 예측값 : [[9.9854355 1.432108  1.2716159]]
+'''
+
+===============================================
+===============================================
+
+import numpy as np
+from tensorflow.keras import models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+#1. 데이터
+x_train = np.array([1,2,3,4,5,6,7])
+x_test = np.array([8,9,10])
+y_train = np.array([1,2,3,4,5,6,7])
+y_test = np.array([8,9,10])
+
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(10, input_dim=1))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x_train, y_train, epochs=100, batch_size=1)
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test)
+print('loss : ', loss)
+result = model.predict([[11]])
+print('11의 예측값 : ', result)
+
+'''
+loss :  0.07803503423929214
+11의 예측값 :  [[10.59292]]
+'''
+
+====================================================
+====================================================
+
+
+import numpy as np
+from tensorflow.keras import models
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+#1. 데이터
+x = np.array([1,2,3,4,5,6,7,8,9,10])
+y = np.array([1,2,3,4,5,6,7,8,9,10])
+
+##과제## train과 test 비율을 8:2으로 분리하시오.
+##리스트 슬라이싱 사용
+x_train = x[:8]
+x_test = x[8:]
+y_train = y[:8]
+y_test = y[8:]
+
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(1, input_dim=1))
+model.add(Dense(50))
+model.add(Dense(130))
+model.add(Dense(80))
+model.add(Dense(5))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x_train, y_train, epochs=100, batch_size=1)
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test)
+print('loss : ', loss)
+result = model.predict([11])
+print('11의 예측값 : ', result)
+
+'''
+loss :  0.0010770537192001939
+11의 예측값 :  [[11.037981]]
+
+loss :  4.547473508864641e-13
+11의 예측값 :  [[10.999999]]
+
+loss :  3.637978807091713e-12
+11의 예측값 :  [[11.]]
+
+loss :  9.094947017729282e-13
+11의 예측값 :  [[11.000001]]
+
+loss :  4.297589839552529e-08
+11의 예측값 :  [[10.999734]]
+
+'''
+
+===================================================
+랜덤으로 추출해서 훈련시키기 (사이킷런)
+
+x = np.array(range(100))
+y = np.array(range(1,101))
+
+from sklearn.model_selection import train_test_split x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.7, shuffle=True, random_state=66)
+===================================================
+
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+#1. 데이터
+x = np.array(range(100))
+y = np.array(range(1,101))
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, 
+         train_size=0.7, shuffle=True, random_state=66)
+
+
+print(x_test)
+print(y_test)
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(1, input_dim=1))
+model.add(Dense(50))
+model.add(Dense(130))
+model.add(Dense(80))
+model.add(Dense(5))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x_train, y_train, epochs=100, batch_size=1)
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test)
+print('loss : ', loss)
+result = model.predict([101])
+print('101의 예측값 : ', result)
+
+
+====================================================
+점뿌리기 선긋기
+====================================================
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+
+#1. 데이터
+x = np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+y = np.array([1,2,3,4,5,6,7,8,9, 3, 8,12,13,17, 8,14,21,23,41,25])
+
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.7, shuffle=True, random_state=66)
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(5, input_dim=1))
+model.add(Dense(4))
+model.add(Dense(4))
+model.add(Dense(4))
+model.add(Dense(1))
+
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x, y, epochs=100, batch_size=1)
+
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test)  #로스값은 훈련에 영향을 주지 않는다
+print('loss : ', loss)
+
+y_predict = model.predict(x)
+
+plt.scatter(x,y)  #점찍기
+plt.plot(x, y_predict) #선긋기
+plt.show()
+
+
+
+========================================================
+결정계수란??(R^2)
+회귀모델이 주어진 자료에 얼마나 적합한지를 평가하는 지표
+y의 변동량대비 모델 예측값의 변동량을 의미함
+0~1의 값을 가지며, 상관관계가 높을수록 1에 가까워짐
+r2=0.3인 경우 약 30% 정도의 설명력을 가진다 라고 해석할 수 있음
+sklearn의 r2_score의 경우 데이터가 arbitrarily할 경우 음수가 나올수 있음
+음수가 나올경우 모두 일괄 평균으로 예측하는 것보다 모델의 성능이 떨어진다는 의미
+결정계수는 독립변수가 많아질 수록 값이 커지기에, 독립변수가 2개 이상일 경우 조정된 결정계수를 사용해야 함
+============================================================
+x = np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+y = np.array([1,2,3,4,5,6,7,8,9, 3, 8,12,13,17, 8,14,21,23,41,25])
+
+from sklearn.metrics import r2_score
+R2 = r2_score(x, y)
+print('r2값은: ', R2)
+=============================================================
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import numpy as np
+
+
+#1. 데이터
+x = np.array([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
+y = np.array([1,2,3,4,5,6,7,8,9, 8, 8,12,13,17, 8,14,21,23,23,25])
+
+import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, 
+         train_size=0.7, shuffle=True, random_state=66)
+
+#2. 모델구성
+model = Sequential()
+model.add(Dense(5, input_dim=1))
+model.add(Dense(80))
+model.add(Dense(130))
+model.add(Dense(30))
+model.add(Dense(1))
+
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer='adam')
+model.fit(x, y, epochs=100, batch_size=1)
+
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test)  #로스값은 훈련에 영향을 주지 않는다
+print('loss : ', loss)
+
+y_predict = model.predict(x_test)
+
+from sklearn.metrics import r2_score
+r2 = r2_score(y_test, y_predict)
+print('r2값은: ', r2)
+
+## loss :  5.610551834106445
+## r2값은:  0.8557286327248208
+
+
+===================================================
+===================================================
+
+
+
