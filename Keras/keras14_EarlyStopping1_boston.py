@@ -6,6 +6,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import numpy as np
 from sklearn.model_selection import train_test_split
+
 #1. 데이터
 from sklearn.datasets import load_boston
 from tensorflow.python.keras.callbacks import History

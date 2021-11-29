@@ -1,15 +1,14 @@
-##########  validation train test overfit4 EarlyStopping diabetes  ##############
-#1. R2를 0.8 이상 만들어라
 
+#1. 데이터
 
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import numpy as np
 from sklearn.model_selection import train_test_split
-#1. 데이터
+
 from sklearn.datasets import load_boston, load_diabetes
 from tensorflow.python.keras.callbacks import History
-#dataset = load_boston()
+
 dataset = load_diabetes()
 x = dataset.data
 y = dataset.target
@@ -81,10 +80,10 @@ plt.show()
 
 
 #=================================================================
-
+'''
 print(hist.history['loss'])
 print(hist.history['val_loss'])
-
+'''
 
 '''
 Earlystopping 에 대하여..
