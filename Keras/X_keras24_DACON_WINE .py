@@ -1,3 +1,6 @@
+#########################################################
+##################  DACON WINE Final  ###################
+#########################################################
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -62,8 +65,8 @@ max    3231.000000      15.900000          1.040000     1.660000       65.800000
 #      dtype='object')
 
 x = train.drop(['id', 'quality'], axis=1) # 컬럼을 삭제할때는 axis=1, 디폴트값은 axis=0
-test_file = test_file.drop(['id'], axis=1)
 y = train['quality']
+test_file = test_file.drop(['id'], axis=1)
 
 from sklearn import preprocessing
 from sklearn.preprocessing import LabelEncoder
@@ -98,20 +101,20 @@ print(y.shape)
 x_train, x_test, y_train, y_test = train_test_split(x, y,
                                                     train_size=0.8, shuffle=True, random_state=66)
 
-#scaler = MinMaxScaler()
+scaler = MinMaxScaler()
 #scaler = StandardScaler()
 #scaler = RobustScaler()
-scaler = MaxAbsScaler()
+#scaler = MaxAbsScaler()
 scaler.fit(x_train)
 x_train = scaler.transform(x_train)
 x_test = scaler.transform(x_test)
 
 #2. 모델구성
 input1 = Input(shape=(12,))
-dense1 = Dense(40)(input1)
-dense2 = Dense(20, activation='relu')(dense1)
-dense3 = Dense(10)(dense2)
-dense4 = Dense(5)(dense3)
+dense1 = Dense(20,activation='linear')(input1)
+dense2 = Dense(40,activation='linear')(dense1)
+dense3 = Dense(20,activation='relu')(dense2)
+dense4 = Dense(10)(dense3)
 output1 = Dense(5, activation='softmax')(dense4)
 model = Model(inputs=input1, outputs=output1)
 
@@ -119,7 +122,7 @@ model = Model(inputs=input1, outputs=output1)
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
 from tensorflow.keras.callbacks import EarlyStopping
-es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
+es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1, restore_best_weights=True)
 
 model.fit(x_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[es])
 
