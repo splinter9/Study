@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
-from sklearn.preprocessing import MinMaxScaler, LabelEncoder, OneHotEncoder
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, MaxAbsScaler, LabelEncoder, OneHotEncoder
 from sklearn.ensemble import VotingClassifier
 from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier, GradientBoostingClassifier
 from sklearn.metrics import accuracy_score
-
 from sklearn import metrics
 
 def f1_score(answer, submission):
@@ -32,8 +31,8 @@ print(train.shape, test_file.shape)           # (151, 15) (152, 14)
 # plt.show()    
     
 
-x = x.drop(['sex'],axis =1)
-test_file =test_file.drop(['id','sex'],axis =1)
+#x = x.drop(['sex'],axis =1)
+test_file =test_file.drop(['id'],axis =1)
 # le = LabelEncoder()
 # le.fit(train['sex'])
 # x['sex'] = le.transform(train['sex'])
@@ -51,10 +50,10 @@ print(x.shape, test_file.shape)
 
 from sklearn.model_selection import train_test_split
 x_train, x_test, y_train, y_test = train_test_split(x, y, 
-         train_size = 0.5, shuffle = True, random_state = 7) #
+         train_size = 0.7, shuffle = True, random_state = 3) #
 
-scaler = MinMaxScaler()
-#scaler = StandardScaler()
+#scaler = MinMaxScaler()
+scaler = StandardScaler()
 #scaler = RobustScaler()
 #scaler = MaxAbsScaler()
 
@@ -62,16 +61,16 @@ x_train = scaler.fit_transform(x_train)
 x_test = scaler.transform(x_test)
 
 model1 = RandomForestClassifier(oob_score= True, bootstrap=True, class_weight=None, criterion='gini',
-            max_depth=None, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None,min_samples_leaf=1, min_samples_split=2,
-            min_weight_fraction_leaf=0.0, n_estimators= 200, n_jobs=None, verbose=0, warm_start=False, random_state=3)
+            max_depth=300, max_features='auto', max_leaf_nodes=None, min_impurity_decrease=0.0, min_impurity_split=None,min_samples_leaf=20, min_samples_split=3,
+            min_weight_fraction_leaf=0.0, n_estimators= 3000, n_jobs=None, verbose=0, warm_start=False, random_state=7)
 
-model2 = GradientBoostingClassifier(n_estimators = 200,random_state=3)
+model2 = GradientBoostingClassifier(n_estimators = 3000, random_state=7)
 
-model3 = ExtraTreesClassifier(n_estimators = 200,random_state =3)
+model3 = ExtraTreesClassifier(n_estimators = 3000, random_state =7)
 
 from sklearn.experimental import enable_hist_gradient_boosting
 from sklearn.ensemble import HistGradientBoostingClassifier
-model4 = HistGradientBoostingClassifier(random_state =3)
+model4 = HistGradientBoostingClassifier(random_state =7)
 
 
 #from lightgbm import LGBMClassifier
