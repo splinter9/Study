@@ -106,29 +106,30 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,
 #2. 모델구성
 model = Sequential()
 model.add(Dense(100, input_dim=13))
-model.add(Dense(80))
+model.add(Dense(122, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(60, activation='relu'))
-model.add(Dense(40, activation='relu'))
+model.add(Dense(80, activation='relu'))
+model.add(Dense(50, activation='relu'))
+model.add(Dense(30, activation='relu'))
+model.add(Dense(20, activation='relu'))
 model.add(Dense(20, activation='relu'))
 model.add(Dense(10, activation='relu'))
 model.add(Dense(1, activation='sigmoid'))
 
 #3. 컴파일, 훈련
-# model.compile(loss='mse', optimizer='adam')
-# model.fit(x_train, y_train, epochs=1000, batch_size=16, 
-#           #validation_data=(x_val, y_val))
-#           validation_split=0.1)
-model.compile(loss='mse', optimizer='adam', metrics=['accuracy'])
-es = EarlyStopping(monitor='val_loss', patience=300, mode='min', verbose=1, restore_best_weights=True)
-mcp = ModelCheckpoint (monitor = 'val_loss', mode = 'min', verbose = 1, save_best_only=True,filepath = './_ModelCheckPoint/keras27_8_MCP.hdf5')
-model.fit(x_train, y_train, epochs=1000, validation_split=0.2, verbose=1, batch_size=10, callbacks=[mcp,es])
 
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+es = EarlyStopping(monitor='val_loss', patience=1000, mode='min', verbose=1, restore_best_weights=True)
+mcp = ModelCheckpoint (monitor = 'val_loss', mode = 'min', verbose =1, save_best_only=True, filepath = './_ModelCheckPoint/keras27_8_MCP.hdf5')
+model.fit(x_train, y_train, epochs=10000, validation_split=0.5, verbose=1, batch_size=16, callbacks=[mcp,es])
 
+# binary_crossentropy
+# mse
+# categorical_crossentropy
 
-#scaler= MinMaxScaler()
-# #scaler= StandardScaler()
-# #scaler= RobustScaler()
+# scaler= MinMaxScaler()
+# scaler= StandardScaler()
+# scaler= RobustScaler()
 scaler= MaxAbsScaler()
 scaler.fit(x_train)
 
@@ -143,7 +144,6 @@ print(f'f1_score : {f1_score(y, logistic_preds)}')
 
 y_predict = model.predict(x_test)
 f1_score = model.evaluate(x_test, y_test) 
-
 
 
 
