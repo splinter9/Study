@@ -122,17 +122,11 @@ print(y2_train.shape, y2_test.shape)  #(10, 1) (5, 1)
 # #3. 컴파일, 훈련
 # model.compile(loss='mse', optimizer='adam', metrics='mae')
 # from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
-# import datetime
-# import time
-# date = datetime.datetime.now()
-# datetime = date.strftime("%m%d_%H%M")   # 월일_시분
-# # print(datetime)
 
-# filepath = './_ModelCheckPoint/'
 # filename = '{epoch:04d}-{val_loss:.4f}.hdf5'       # 100(에포수)-0.3724(val_loss).hdf5
 # model_path = "".join([filepath, 'test_stock_', datetime, '_', filename])
 # es = EarlyStopping(monitor='val_loss', patience=20, mode='auto', verbose=1, restore_best_weights=True)
-# mcp = ModelCheckpoint(monitor="val_loss", mode="auto", verbose=1, save_best_only=True, filepath=model_path)
+
 
 # start = time.time()
 # hist = model.fit([x1_train, x2_train], [y1_train, y2_train], epochs=100, batch_size=1, validation_split=0.3, callbacks=[es, mcp])
@@ -140,14 +134,14 @@ print(y2_train.shape, y2_test.shape)  #(10, 1) (5, 1)
 # print("걸린시간 : ", round(end, 3), '초')
 
 # model.save("./_save/test_stock1_save_model.h5")
-model = load_model('./_ModelCheckPoint/test_stock_1219_2156_0038-5213349.5000.hdf5')
+# model = load_model('./_ModelCheckPoint/test_stock_1219_2156_0038-5213349.5000.hdf5')
 
 #4. 평가, 예측
 loss = model.evaluate ([x1_test, x2_test], [y1_test,y2_test], batch_size=1)
 print('loss :', loss)
 result1, result2 = model.predict([x1, x2])
-print('삼성전자 12/20 종가 : ', result1[-1],'원')
-print('키움증권 12/20 종가 : ', result2[-1],'원')
+print('삼성전자 종가 : ', result1[-1],'원')
+print('키움증권 종가 : ', result2[-1],'원')
 # print(y1_pred)
 # print(y2_pred)
 # 삼성전자 12/20 종가 :  [78151.98] 원
