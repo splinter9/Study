@@ -1,5 +1,5 @@
 from sklearn.utils import all_estimators
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, r2_score
 from sklearn.datasets import load_diabetes
 from sklearn.model_selection import train_test_split
 import warnings
@@ -20,21 +20,23 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffl
 # x_test = scalar.transform(x_test)
 
 #2.MODEL
-allAlgorithms = all_estimators(type_filter='classifier')
+# allAlgorithms = all_estimators(type_filter='classifier')    # 모델의 갯수 :  41
+allAlgorithms = all_estimators(type_filter='regressor')   # 모델의 갯수 :  55
 
 print("allAlgorithms : ", allAlgorithms)
 print("모델의 갯수:", len(allAlgorithms)) #41
 
-for (name,algorithm) in allAlgorithms:
+for (name, algorithm) in allAlgorithms:
     try:
         model = algorithm()
-
         model.fit(x_train, y_train)
-        y_pred = model.predict(x_test)
-        print(name,'의 정답률 : ', accuracy_score(y_test,y_pred))
+        
+        y_predict = model.predict(x_test)
+        r2 = r2_score(y_test, y_predict)
+        print(name,'의 정답률 : ', r2)
     except:
-        continue
-        #print(name,'없는 모델')
+        # continue
+        print(name,'은 에러 터진 놈!!!!')
 
 
 '''     

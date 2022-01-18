@@ -13,11 +13,11 @@ y = dataset.target
 
 x_train, x_test, y_train, y_test = train_test_split(x, y, train_size=0.8, shuffle=True, random_state=42)
 
-# from sklearn.preprocessing import MinMaxScaler
-# scalar = MinMaxScaler
-# scalar.fit(x_train)
-# x_train = scalar.transform(x_train)
-# x_test = scalar.transform(x_test)
+from sklearn.preprocessing import MinMaxScaler
+scalar = MinMaxScaler
+scalar.fit(x_train)
+x_train = scalar.transform(x_train)
+x_test = scalar.transform(x_test)
 
 #2.MODEL
 allAlgorithms = all_estimators(type_filter='classifier')

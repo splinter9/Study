@@ -37,7 +37,9 @@ for (name,algorithm) in allAlgorithms:
         #print(name,'없는 모델')
 
 
-'''     
+
+'''
+
 모델의 갯수: 41
 AdaBoostClassifier 의 정답률 :  1.0
 BaggingClassifier 의 정답률 :  1.0
