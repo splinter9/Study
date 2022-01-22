@@ -1,0 +1,741 @@
+==================================================================
+회기분석
+weight값과 bias의 최적값은 1차원 회기분석에서는 여러 데이터에서 정확성이 떨어진다
+예) 원형으로 군집된 데이터 형태 - 직선을 긋기에는 애매하다
+예) 두 개 이상의 다중 데이터로 구성된 군집형태 - 선을 하나만 긋는게 맞나??
+
+이진분류(다중분류)
+1, 0의 값으로 구성된 2차원 함수일 경우 mse가 아니라 바이너리
+
+AI에서 크게 다중분류와 회기로 나뉜다
+==================================================================
+
+시그모이드 sigmoid? 이진분류
+0 ~ 1 사이값 -> 연산시 첫번쨰 W값은 랜덤으로 배정되기 때문에 첫번째 바이어스 값은 대부분 0을 준다
+이런경우 수치가 필요한게 아니라 0, 1 둘 중 하나의 값을 구하는것이 목적
+결과값을 0,1 둘중 하나만 특정해주면 된다 (부동소수점 연산이 가장 값이 좋다)
+activation 함수 => 가장 디폴트로 쓰는 함수는 리니어(1차함수)
+시그모이드 함수는 T,F 1,0 이런 계산에 쓰기좋다 (계단함수 업그레이드?)
+하이퍼튜닝에서는 그 또한 어떻게 썼는지 모름 (AI가라임??)
+시그모이드 함수 결과값은 1과 0 사이지 그렇게 딱 떨어지는건 아님
+loss = mse
+       binary cross entropy
+
+       #####이진분류의 값은 시그모이드 로스값은 바이너리####
+
+이진분류의 avtivation = sigmoid
+이진분류의 loss = binary cross entropy
+
+좋은 모델의 판단은 로스값
+==================================================================
+import numpy as np
+from sklearn.datasets import load_breast_cancer
+datasets = load_breast_cancer()
+print(datasets.DESCR)
+print(datasets.feature_names)
+
+
+x = datasets.data
+y = datasets.target
+print(x.shape, y.shape)  #(569, 30) (569,)
+
+print(y[:10])        ##y값만 찍어봤더니 [0 0 0 0 0 0 0 0 0 0] 이진분류를 써야함
+print(np.unique(y))  ##[0 1] 분류값에서 고유한값, 0과 1밖에 없다는 뜻
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=66)
+
+#2. 모델구성
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(100, activation='linear', input_dim=30))
+model.add(Dense(13, activation='linear'))
+model.add(Dense(8, activation='linear'))
+model.add(Dense(5, activation='linear'))
+model.add(Dense(3, activation='linear'))
+model.add(Dense(2))
+model.add(Dense(1, activation='sigmoid'))
+
+#3. 컴파일, 훈련
+
+import time
+start = time.time()
+
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
+
+model.fit(x_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[es])
+
+
+end = time.time() - start
+print("걸린시간:" , round(end, 3), '초')
+
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test) 
+print('loss : ', loss)    
+
+
+##loss :  [0.277472585439682, 0.9122806787490845]    
+##        [loss='binary_crossentropy',metrics=['accuracy'] 
+## 로스값과 매트릭스값은 훈련에 영향을 주지 않은 결과값이다
+
+==============================================================
+다중분류 => 이진분류 sigmoid , binary_crossentropy
+다중분류 => 셋 이상  softmax , categorical_crossentropy    
+==============================================================
+loss, 즉 비용,손실은 작을 수록 좋다
+평가지표는 loss값을 의미한다
+
+<sigmoid> 값은 0,1 두 개
+
+<softmax> 입력받은 값을 출력으로 
+총 합이 1이 되는 특성의 함수
+이는 입력한 N개 만큼 N개 값이 나온다
+목적은 N값중의 최고값을 결과로 도출
+가장 큰 출력값을 부여받은 클래스가
+확률이 가장 높은것으로 이용된다
+그럼 이게 정확한 의도값일까?
+0.4로 선택된 값과 0.8로 선택된 값은 
+결과는 같지만 값의 가치는 다를것 
+<one hot encoding>
+가장 큰 값만 True값, 나머지는 False값이 나오게함
+
+레이어 중간값에는 쓰면 안된다 결과값이니까
+3개의 결과값은 3개의 노드가 필요하다
+최종 노드의 갯수는 라벨의 갯수와 동일
+
+============================================================
+============================================================
+#이진분류(default = sigmoid) 
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+#다중분류(default = y값을 one hot encoding 해줌)
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+#회귀분석(default = linear)
+model.compile(loss='mse', optimizer='adam') 
+============================================================
+이진분류 또한 다중분류이기에 소프트맥스로 OneHotEncoding 가능하다
+남녀구분등 합이 1이 나와야하는 경우등에 쓰임
+============================================================
+==============================================================
+
+### 소프트맥스 iris  ###
+
+import numpy as np
+from sklearn.datasets import load_iris
+
+#1.데이터
+
+datasets = load_iris()
+#print(datasets.DESCR)
+#print(datasets.feature_names) 
+#['sepal length (cm)', 'sepal width (cm)', 'petal length (cm)', 'petal width (cm)']
+
+x = datasets.data
+y = datasets.target
+
+#print(x.shape, y.shape) #(150, 4) (150,)
+#print(y)
+##[0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2 2]
+##셔플안하면 원하는 테스트가 안됨 
+#print(np.unique(y)) #[0 1 2]
+
+from tensorflow.keras.utils import to_categorical
+y = to_categorical(y)  ##원핫인코딩
+
+print(y) 
+print(y.shape) #(150, 3)
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=66)
+
+print(x_train.shape, y_train.shape) #(120, 4) (120, 3)
+print(x_test.shape, y_test.shape) #(30, 4) (30, 3)
+
+
+
+#2. 모델구성
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(10, activation='linear', input_dim=4))
+model.add(Dense(10, activation='sigmoid'))
+model.add(Dense(8, activation='linear'))
+model.add(Dense(5))
+model.add(Dense(3, activation='softmax'))
+
+#3. 컴파일, 훈련
+
+#import time
+#start = time.time()
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=10, mode='auto', verbose=1, restore_best_weights=True)
+model.fit(x_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[es])
+
+
+#end = time.time() - start
+#print("걸린시간:" , round(end, 3), '초')
+
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test) 
+print('loss : ', loss[0])
+print('acccuracy: ', loss[1])    
+
+
+results = model.predict(x_test[:7])
+print(y_test[:7])
+print(results)
+
+
+### 결과 및 정리 ###
+'''
+loss :  0.05981618911027908
+acccuracy:  0.9666666388511658
+[[0. 1. 0.]
+ [0. 1. 0.]
+ [0. 1. 0.]
+ [1. 0. 0.]
+ [0. 1. 0.]
+ [0. 1. 0.]
+ [1. 0. 0.]]
+[[1.14848181e-05 9.99759138e-01 2.29464495e-04]
+ [8.14052669e-07 9.94350672e-01 5.64848026e-03]
+ [5.79412642e-07 9.87472415e-01 1.25270225e-02]
+ [9.99813020e-01 1.87038662e-04 9.06954091e-15]
+ [5.30543821e-06 9.99513626e-01 4.81004827e-04]
+ [9.06670539e-06 9.99725640e-01 2.65323004e-04]
+ [9.99803603e-01 1.96368666e-04 9.73749500e-15]]
+'''
+
+=================================================================
+=================================================================
+###   softmax wine   ####
+
+
+import numpy as np
+from sklearn.datasets import load_wine
+
+#1.데이터
+
+datasets = load_wine()
+print(datasets.DESCR)
+print(datasets.feature_names) 
+#['alcohol', 'malic_acid', 'ash', 'alcalinity_of_ash', 'magnesium', 'total_phenols', 'flavanoids', 'nonflavanoid_phenols', 'proanthocyanins', 'color_intensity', 'hue', 'od280/od315_of_diluted_wines', 'proline']
+
+x = datasets.data
+y = datasets.target
+
+print(x.shape, y.shape) #(178, 13) (178,)
+print(y)
+print(np.unique(y)) #[0 1 2]
+
+from tensorflow.keras.utils import to_categorical
+y = to_categorical(y)  ##원핫인코딩
+
+print(y)
+print(y.shape) #(178, 3)
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=66)
+
+print(x_train.shape, y_train.shape) #(142, 13) (142, 3)
+print(x_test.shape, y_test.shape) #(36, 13) (36, 3)
+
+
+
+#2. 모델구성
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(10, activation='linear', input_dim=13))
+model.add(Dense(10, activation='linear'))
+model.add(Dense(70, activation='linear'))
+model.add(Dense(60, activation='linear'))
+model.add(Dense(50, activation='linear'))
+model.add(Dense(3, activation='softmax'))
+
+#3. 컴파일, 훈련
+
+#import time
+#start = time.time()
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=50, mode='auto', verbose=1, restore_best_weights=True)
+model.fit(x_train, y_train, epochs=100, batch_size=1, validation_split=0.2, callbacks=[es])
+
+
+#end = time.time() - start
+#print("걸린시간:" , round(end, 3), '초')
+
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test) 
+print('loss : ', loss[0])
+print('acccuracy: ', loss[1])    
+
+
+results = model.predict(x_test[:5])
+print(y_test[:5])
+print(results)
+
+
+### 결과 및 정리 ###
+'''
+loss :  1.073253870010376
+acccuracy:  0.4166666567325592
+[[0. 0. 1.]
+ [0. 1. 0.]
+ [0. 1. 0.]
+ [1. 0. 0.]
+ [0. 1. 0.]
+ [0. 1. 0.]
+ [0. 0. 1.]
+ [1. 0. 0.]
+ [1. 0. 0.]
+ [0. 1. 0.]]
+[[0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+ [0.32406154 0.39190847 0.28403   ]
+
+이 값은 하이퍼튜닝 과정에서 sigmoid를 중간에 넣어서 값이 매우 나쁘게 나옴
+3개 값을 출력해야 하는데 임의로 0,1 두개 값으로 중간에 바꿔버려 오염시킨 경우
+
+
+##sigmoid를 제거하고 하이퍼튜닝한 결과 
+ loss :  0.18607741594314575
+acccuracy:  0.9444444179534912
+[[0. 0. 1.]
+ [0. 1. 0.]
+ [0. 1. 0.]
+ [1. 0. 0.]
+ [0. 1. 0.]]
+[[2.6253960e-03 9.6948035e-02 9.0042657e-01]
+ [1.7902829e-01 8.1400734e-01 6.9643566e-03]
+ [1.8196541e-04 9.9972385e-01 9.4204202e-05]
+ [9.9619663e-01 3.1806622e-03 6.2276266e-04]
+ [1.3252998e-03 9.9752277e-01 1.1519121e-03]]
+ 
+아주 양호한 결과를 보임
+
+
+오늘 수업의 핵심!!
+
+#이진분류(default = sigmoid)
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+#다중분류(default = y값을 one hot encoding 해줌)
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+
+#회귀분석(default = linear)
+model.compile(loss='mse', optimizer='adam')
+ 
+'''
+
+
+===================================================================
+===================================================================
+#배치사이즈를 없애고 돌려봐라 그리고 배치사이즈 디폴트값을 찾아봐라
+
+import numpy as np
+from sklearn.datasets import fetch_covtype
+
+#1.데이터
+
+datasets = fetch_covtype()
+print(datasets.DESCR)
+print(datasets.feature_names) 
+#['Elevation', 'Aspect', 'Slope', 'Horizontal_Distance_To_Hydrology', 'Vertical_Distance_To_Hydrology', 'Horizontal_Distance_To_Roadways', 'Hillshade_9am', 'Hillshade_Noon', 'Hillshade_3pm', 'Horizontal_Distance_To_Fire_Points', 'Wilderness_Area_0', 'Wilderness_Area_1', 'Wilderness_Area_2', 'Wilderness_Area_3', 'Soil_Type_0', 'Soil_Type_1', 'Soil_Type_2', 'Soil_Type_3', 'Soil_Type_4', 'Soil_Type_5', 'Soil_Type_6', 'Soil_Type_7', 'Soil_Type_8', 'Soil_Type_9', 'Soil_Type_10', 'Soil_Type_11', 'Soil_Type_12', 'Soil_Type_13', 'Soil_Type_14', 'Soil_Type_15', 'Soil_Type_16', 'Soil_Type_17', 'Soil_Type_18', 'Soil_Type_19', 'Soil_Type_20', 'Soil_Type_21', 'Soil_Type_22', 'Soil_Type_23', 'Soil_Type_24', 'Soil_Type_25', 'Soil_Type_26', 'Soil_Type_27', 'Soil_Type_28', 'Soil_Type_29', 'Soil_Type_30', 'Soil_Type_31', 'Soil_Type_32', 'Soil_Type_33', 'Soil_Type_34', 'Soil_Type_35', 'Soil_Type_36', 'Soil_Type_37', 'Soil_Type_38', 'Soil_Type_39']
+
+x = datasets.data
+y = datasets.target
+
+print(x.shape, y.shape) #(581012, 54) (581012,)
+print(y) #[5 5 2 ... 3 3 3]
+print(np.unique(y)) #[1 2 3 4 5 6 7]
+
+from tensorflow.keras.utils import to_categorical
+y = to_categorical(y)  ##원핫인코딩
+print(y.shape) #(581012, 8)
+
+from sklearn.model_selection import train_test_split
+x_train, x_test, y_train, y_test = train_test_split(x,y, train_size=0.8, shuffle=True, random_state=66)
+
+print(x_train.shape, y_train.shape) #(464809, 54) (464809, 8)
+print(x_test.shape, y_test.shape) #(116203, 54) (116203, 8)
+
+
+
+#2. 모델구성
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+model = Sequential()
+model.add(Dense(10, activation='linear', input_dim=54))
+model.add(Dense(10, activation='linear'))
+model.add(Dense(70, activation='linear'))
+model.add(Dense(60, activation='linear'))
+model.add(Dense(50, activation='linear'))
+model.add(Dense(8, activation='softmax')) 
+
+##유니크가 7이고 타겟수(y칼럼)가 8개임???
+
+
+#3. 컴파일, 훈련
+
+model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=30, mode='auto', verbose=1, restore_best_weights=True)
+model.fit(x_train, y_train, epochs=100, batch_size=1, 
+          validation_split=0.2, callbacks=[es])
+
+#4. 평가, 예측
+loss = model.evaluate(x_test, y_test) 
+print('loss : ', loss[0])
+print('acccuracy: ', loss[1])    
+
+
+results = model.predict(x_test[:5])
+print(y_test[:5])
+print(results)
+
+
+
+### 결과 및 정리 ###
+'''
+loss :  0.6505149006843567
+acccuracy:  0.7181226015090942
+[[0. 1. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0.]
+ [0. 1. 0. 0. 0. 0. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0.]
+ [0. 0. 1. 0. 0. 0. 0. 0.]]
+[[1.3477453e-14 7.2411144e-01 2.6227605e-01 7.1486511e-08 8.8144367e-11
+  7.6313934e-04 7.2849787e-07 1.2848499e-02]
+ [5.1537650e-12 5.7727475e-02 9.3716645e-01 1.1878162e-04 6.5105676e-04
+  2.0010993e-03 2.3261867e-03 8.8955130e-06]
+ [4.9285138e-12 8.0698484e-01 1.7660528e-01 1.7762960e-07 3.5280650e-09
+  1.0693371e-03 1.4682388e-05 1.5325610e-02]
+ [2.4152165e-11 7.2045989e-02 9.1990042e-01 1.4621082e-04 7.8683061e-04
+  4.8304731e-03 2.2620989e-03 2.8041144e-05]
+ [5.1767726e-13 5.0561506e-01 4.8011741e-01 2.4212384e-05 1.7939278e-09
+  2.7682295e-03 5.5456851e-05 1.1419683e-02]]
+
+
+
+### 배치 사이즈 비교 ###
+batch_size=1로 지정후 실행한 경우
+371847/371847 [==============================] - 218s 587us/step - loss: 1.0092 - accuracy: 0.6511 - val_loss: 0.7717 - val_accuracy: 0.6701
+
+batch_size를 넣지않고 디폴트값으로 실행한 경우
+11621/11621 [==============================] - 7s 618us/step - loss: 0.6715 - accuracy: 0.7081 - val_loss: 0.6590 - val_accuracy: 0.7160
+
+371847, 11621 로 그 비율이 약 31.9978배임을 알수있습니다.
+그러므로 배치사이즈의 디폴트값은 약 '32'입니다
+
+'''
+
+==================================================================
+one hot encoding 방법
+==================================================================
+##케라스 버전
+from tensorflow.keras.utils import to_categorical
+y = to_categorical(y)  ##원핫인코딩
+print(y.shape) #(581012, 8)
+
+##사이킷런버전
+from sklearn.preprocessing import OneHotEncoder
+ohe = OneHotEncoder(sparse=False)
+y = ohe.fit_transform(y.reshape(-1,1))
+
+##판다스버전
+import pandas as pd
+pd.get_dummies(y)
+pd.get_dummies(y, drop_first=True)
+
+=============================================================
+MSE에 루트 씌워서 RMES만들기
+
+def RMSE(y_test, y_pred):
+    return np.sqrt(mean_squared_error(y_test, y_pred))
+
+
+rmse = RMSE(y_test, y_pred)
+print("RMSE : ", rmse)
+
+==============================================================
+==============================================================
+로그변환시 주의점 로그는 0이 나오면 안된다 무한값이 나오니까
+로그변환하기 전에 1을 더해줘야 한다
+로그변환은 넘파이에서 제공
+==============================================================
+==============================================================
+#### 케글 바이크 문제 ########
+
+import numpy as np
+import pandas as pd 
+from sklearn.metrics import r2_score, mean_squared_error #mse
+from sklearn.model_selection import train_test_split
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+import matplotlib.pyplot as plt
+
+def RMSE(y_test, y_pred):
+    return np.sqrt(mean_squared_error(y_test, y_pred))
+# sqrt : 제곱근
+
+#1. 데이터 
+path = './_data/bike/'   # '..'의 뜻은 이전 단계이다. / '.'은 현재 단계 >> 여기선 STUDY 폴더
+train = pd.read_csv(path+'train.csv')  
+# print(train)      # (10886, 12)
+test_file = pd.read_csv(path+'test.csv')
+# print(test.shape)    # (6493, 9)
+submit_file = pd.read_csv(path+ 'sampleSubmission.csv')
+# print(submit.shape)     # (6493, 2)
+print(submit_file.columns)    # ['datetime', 'count']
+
+
+# print(train.info())
+# print(test.describe())   
+# 'object': 모든 자료형의 최상위형, string형으로 생각하면 된다.   
+# 0   datetime    10886 non-null  object는 수치화 할 수 없다. >> 수치화 작업을 해주어야 한다. 
+# print(type(train)) # <class 'pandas.core.frame.DataFrame'>
+# print(train.describe()) # mean 평균, std 표준편차, min 최소값, 50% 중위값, holiday는 0과 1(휴일), 
+# print(train.columns) 
+# Index(['datetime', 'season', 'holiday', 'workingday', 'weather', 'temp',
+#'atemp', 'humidity', 'windspeed', 'casual', 'registered', 'count'], 
+# dtype='object')
+# print(train.head(3))
+# print(train.tail())
+
+
+x = train.drop(['datetime', 'casual','registered','count'], axis=1) # axis=1 컬럼 삭제할 때 필요함
+test_file = test_file.drop(['datetime'], axis=1) 
+
+# print(x.columns) 
+
+'''
+Index(['season', 'holiday', 'workingday', 'weather', 'temp', 'atemp',
+       'humidity', 'windspeed'],
+      dtype='object')
+'''   
+# print(x.shape)      # (10886, 8)
+y = train['count']
+# print(y.shape)      # (10886,)
+# print(y)
+
+# 로그변환
+y = np.log1p(y)
+
+# plt.plot(y)
+# plt.show()
+# 데이터가 우상향하는 것처럼 한쪽으로 치우친 경우에는 로그 변환 시켜준다. 
+# 로그 변환의 가장 큰 문제 : 0이라는 숫자가 나오면 안된다. 
+# >> 안나오게 하려면?? 로그하기 전에 1을 더해준다. 
+
+
+x_train, x_test, y_train, y_test = train_test_split(x,y,
+        train_size =0.9, shuffle=True, random_state = 36)
+
+#2. 모델구성
+
+model = Sequential()
+model.add(Dense(100, input_dim=8)) 
+model.add(Dense(150,activation='linear'))
+model.add(Dense(90))
+model.add(Dense(160))
+model.add(Dense(60))
+model.add(Dense(30))
+model.add(Dense(15))
+model.add(Dense(1))
+
+#3. 컴파일, 훈련
+model.compile(loss='mse', optimizer = 'adam')
+ 
+from tensorflow.keras.callbacks import EarlyStopping
+es = EarlyStopping(monitor='val_loss', patience=50, mode='auto',
+                   verbose=1, restore_best_weights=False)
+
+model.fit(x_train, y_train, epochs=100, batch_size=5,
+          validation_split=0.2, callbacks=[es])
+
+#4. 평가, 예측
+loss = model.evaluate(x_test,y_test)
+print("loss : ",loss)
+
+y_pred = model.predict(x_test)
+
+r2 = r2_score(y_test, y_pred)
+print ('r2 :', r2)
+
+rmse = RMSE(y_test,y_pred)
+print('RMSE : ', rmse)
+
+
+'''
+################################
+로그 변환 전
+loss :  24695.318359375
+r2 : 0.26067632198517987
+RMSE :  157.14742020627182
+
+로그 변환 적용 후
+loss :  1.4911260604858398
+r2 : 0.25609501552210445
+RMSE :  1.221116705839553
+##################################
+'''
+
+
+##################### 제출용 제작 ####################
+results = model.predict(test_file)
+
+submit_file ['count'] = results
+
+print(submit_file[:10])
+
+submit_file.to_csv(path + 'LH_BIKE_TEST.csv', index=False) # to_csv하면 자동으로 인덱스가 생기게 된다. > 없어져야 함
+
+
+
+
+===========================================================
+===========================================================
+인공지능은 병렬 연산 
+부동소수점 연산에 최적화(1에 수렴하는 값이 최대값)
+실수 계산은 메모리 문제를 야기한다
+판다스와 넘파이의 차이, 넘파이는 숫자만 판다스는 스트링 문자도 포함
+============================================================
+결측치는 추정으로 채울수록 성능업, 어떻게??
+============================================================
+============================================================
+MinMaxScaler 전처리
+============================================================
+데이터 정제 첫번째: 값을 1이하로 변환한다
+0 ... 100 사이의 데이터는 1과 0 사이의 소수점 값으로 바꿔줌
+(최대값으로 나눠 비율대로 맞추면 됨)
+ex) 60, 61, 70, 80 89, 100 라면 60=0, 100=1  (i-min / max - min)
+이라는 공식으로 전처리 한다 : minmax scaler
+x값은 전처리 대상이지만 y값은 타겟이므로 손대지 않는다. 
+단, y값을 손대는 경우 결과에서 되돌려서 출력한다
+전처리는 모델구성 이전에 한다
+당연히 전처리는 전체 데이터를 똑같이 적용한다 (부분전처리는 데이터조작)
+
+만약 x의 칼럼이 여러개라면 같은 스케일로 전처리하면 큰일남
+각각의 칼럼은 독립된 특성이므로 (예; 몸무게 나이 키 연봉 등등)
+
+MinMaxScalerdml 문제는 
+1)아웃라이어에 민감하고 범위가 치우치고 좁아진다
+2)train_test_split 실행시 스케일 비율이 틀어진다(각각 따로 스케일링하기 때문에) 
+해결)train 스케일링 후 그 비율에 맞춰서 test을 트랜스펌만 해준다 
+당연히 0~1을 벗어난 값이 생기는데 그대로 쓴다 
+과적합방지로 오히려 훈련이 뛰어날 수 있다
+
+=============================================================
+=============================================================
+스케일러 종류
+scaler = MinMaxScaler()
+scaler = StandardScaler()
+scaler = RobustScaler()
+scaler = MaxAbsScaler()
+
+scaler.fit(x_train)
+x_train = scaler.transform(x_train)
+x_test = scaler.transform(x_test) ##y는 타겟이므로 전처리 안함
+=============================================================
+=============================================================
+activation의 종류
+1) linear
+2) sigmoid
+3) softmsax
+4) relu
+=============================================================
+model.summary()
+'''
+Total params: 57
+Trainable params: 57
+Non-trainable params: 0
+
+
+# 1 x 5 = 5   +5   +bias로 연산 한번 더해진다
+# 5 x 3 = 15  +3
+# 3 x 4 = 12  +4 
+# 4 x 2 = 8   +2
+# 2 x 1 = 2   +1
+
+연산 숫자가 성능에 직접영향을 주기에 조절이 필요하다
+=============================================================
+
+
+
+# print(train.info())
+# print(test.describe())   
+# 'object': 모든 자료형의 최상위형, string형으로 생각하면 된다.   
+# 0   datetime    10886 non-null  object는 수치화 할 수 없다. >> 수치화 작업을 해주어야 한다. 
+# print(type(train)) # <class 'pandas.core.frame.DataFrame'>
+# print(train.describe()) # mean 평균, std 표준편차, min 최소값, 50% 중위값, holiday는 0과 1(휴일), 
+# print(train.columns) 
+# Index(['datetime', 'season', 'holiday', 'workingday', 'weather', 'temp',
+#'atemp', 'humidity', 'windspeed', 'casual', 'registered', 'count'], 
+# dtype='object')
+# print(train.head(3))
+# print(train.tail())
+
+
+역강화학습이란
+에이전트의 보상(Reward)을 통해 정책을 학습하는 강화학습과는 반대로, 보상을 얻는 보상 함수를 찾아내는 알고리즘. 보상을 찾는 과정에서 전문가(Expert Agent)의 행동을 사용하기 때문에 모방학습의 한 종류이다. 또한, 역강화학습에서 보상 함수는 여러가지 형태의 값으로 나타날 수 있기 때문에 ill-posed problem 이다. 반대로 well-posed problem 은 해답이 존재하고 유일한 문제를 뜻한다.
+
+행동 복제(Behavioral cloning)는 전문가의 데이터의 입출력을 그대로 따라하지만 IRL은 전문가의 행동에서 보상을 추출하여 RL로 학습하기 때문에 좀 더 일반화(Generalization)가 쉽다.
+
+역강화학습을 사용하는 이유
+기존 강화학습에는 다음과 같은 어려운 문제가 존재한다.
+
+강화학습에 사용되는 보상 함수가 가져야되는 속성들(Multi attirbute)을 정확하게 표현하는 것은 매우 어려운 문제이다.
+예를 들어, 가상의 벌이 먹이를 찾도록 강화 학습을 진행하고 싶을 때 비행거리, 포식자의 위험, 시간, 바람 등 어떤 것을 고려해서 보상을 결정할지 정확히 하기 어렵다.
+강화학습에서 어떠한 행동이 ‘바람직한’ 행동인지를 정의하는 것은 어려운 문제이다. 이 때, 전문가의 행동을 ‘바람직한’ 행동으로 보고 사용할 수 있다.
+역강화학습에서는 이러한 문제를 해결하기위한 대안이 될 수 있다.
+
+역강화학습 과정(간략)
+IRL을 통해 보상 함수의 집합(Set)을 찾기 위해, MDP에서 다음과 같은 조건이 필요하다.
+
+유한한 상태 공간(State Space) S 와 행동 공간(Action Space) A 을 가지고 있어야 한다.
+모델(상태 변이 확률)을 이미 알고 있어야 한다.
+전문가의 행동들(Expert trajectories)에서 만들어진 최적 정책(Optimal poliicy)이 관찰되었다고 가정한다.
+
+MDP를 통해 보상함수는 다음과 같이 정의할 수 있다.
+S는 상태, A는 행동, T는 상태 변이 확률, γ는 감가율, D는 초기 상태 분포, R은 보상을 뜻한다.
+보상함수 R(s)는 가중치 w와 상태변이확률 T 그리고 상태 s를 입력으로 0~1 사이의 값을 주는 φ 함수로 정의된다.\
+
+위 정의를 통해 IRL은 다음과 같이 진행된다.
+성능이 우수한 정책(전문가의 데이터)을 통해 보상함수 R(s)를 구한다.
+보상을 통해 최적 정책을 계산한다.
+1번과 2번을 반복하다가 전문가의 성능과 이전 정책의 성능의 차이 τ 가 ε/2 보다 작을 때 충분히 학습됐다고 생각하고 학습을 종료한다.
+
+
+
+================================================================================
+GRU(Gated Recurrent Unit)
+LSTM에서는 출력, 입력, 삭제 게이트라는 3개의 게이트가 존재했습니다. 
+반면, GRU에서는 업데이트 게이트와 리셋 게이트 두 가지 게이트만이 존재합니다. 
+(LSTM에서 출력게이트가 빠진 모양)
+GRU는 LSTM보다 학습 속도가 빠르다고 알려져있지만 
+여러 평가에서 GRU는 LSTM과 비슷한 성능을 보인다고 알려져 있습니다.
+
+model.add(GRU(hidden_size, input_shape=(timesteps, input_dim)))
