@@ -3,7 +3,7 @@ from tensorflow.keras.datasets import mnist
 from sklearn.datasets import load_iris, load_breast_cancer, load_wine
 from sklearn.datasets import load_boston, fetch_california_housing, load_diabetes
 
-from sklearn.model_selection import train_test_split,KFold,cross_val_score,GridSearchCV
+from sklearn.model_selection import train_test_split,KFold,cross_val_score,GridSearchCV,RandomizedSearchCV
 
 from sklearn.preprocessing import StandardScaler
 
@@ -59,11 +59,16 @@ x_train = lda.transform(x_train)
 x_test = lda.transform(x_test)
 print(x.shape)
 
+parameters = [
+    {'n_estimators':[100, 200, 300], 'learning_rate':[0.1, 0.3, 0.001, 0.01],
+    'max_depth':[4,5,6]}]
+
 #2.MODEL
 
-model = GridSearchCV(XGBClassifier(), verbose=1, refit=True, n_jobs=-1) 
-#Fitting 5 folds for each of 42 candidates, totalling 210 fits
-
+from sklearn.pipeline import make_pipeline, Pipeline
+model = RandomizedSearchCV(XGBClassifier(use_label_encoder=False), parameters, cv=3, verbose=3,  
+                     refit=True, n_jobs=-1)
+#Fitting 3 folds for each of 10 candidates, totalling 30 fits
 
 #3.FIT
 import time
@@ -79,3 +84,9 @@ print('결과:', result)
 end = time.time() - start
 print('걸린시간:', round(end,3), '초')
 
+
+
+'''
+결과: 0.3565714285714286
+걸린시간: 310.864 초
+'''

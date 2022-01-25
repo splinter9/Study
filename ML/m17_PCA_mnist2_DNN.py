@@ -1,10 +1,7 @@
 import numpy as np
 from tensorflow.keras.datasets import mnist
 from sklearn.decomposition import PCA
-import numpy as np 
 from numpy.core.fromnumeric import cumsum, shape
-from sklearn import datasets 
-from sklearn.datasets import load_wine
 from sklearn.model_selection import train_test_split,KFold,cross_val_score
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.decomposition import PCA # decomposition 분해 
@@ -76,7 +73,7 @@ start = time.time()
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['acc'])
 model.fit(x_train,y_train,epochs=10,batch_size=32,validation_split=0.2,verbose=1)
 
-
+end = time.time()
 loss= model.evaluate(x_test, y_test)
 print(loss)
 
@@ -88,7 +85,7 @@ y_test = np.argmax(y_test,axis=-1)
 
 print(y_pred)
 print(y_test)
-
+print('걸린시간 : ', end - start)
 
 '''
 DNN 최고값

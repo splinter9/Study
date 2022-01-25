@@ -59,7 +59,7 @@ def plot_feature_importances_dataset(model):
     plt.ylabel("Features")
     plt.ylim(-1,n_features)
 
-path = "D:\_data\kaggle\bike"
+path = "D:\_data\bike"
 train = pd.read_csv(path + "train.csv")
 
 model_list = [model_1,model_2,model_3,model_4]
