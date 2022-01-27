@@ -39,14 +39,12 @@ plt.show()
 datasets.groupby(["quality"]).count().plot(kind='bar', rot=0)
 plt.show()
 
-p = pd.DataFrame({'count' : datasets.groupby( [ "quality"] ).size()})
+p = pd.DataFrame({'count' : datasets.groupby( ["quality"] ).size()})
 print(p)
 p.plot(kind='bar', rot=0)
 #########################################
 
 
-
-'''
 datasets = datasets.values
 print(type(datasets))
 print(datasets.shape)
@@ -55,6 +53,21 @@ x = datasets[:, :11]
 y = datasets[:,  11]
 
 print('라벨:',np.unique(y, return_counts=True))
+
+######################################################
+################  칼럼 y값(타겟) 합치기  ##############
+
+newlist=[]
+for i in list(y):
+    #print(i)
+    if i<=4 : 
+        newlist +=[0]
+    elif i<=7:
+        newlist +=[1]
+    else:
+        newlist =+[2]
+y = np.array(newlist)
+print(np.unique(y, return_counts=True))
 
 #############################################################
 #################### 아웃라이어 확인 1 #######################
@@ -83,29 +96,30 @@ plt.show()
 
 #############################################################
 #################### 아웃라이어 확인2 ########################
-def boxplot_vis(data, target_name):
-    plt.figure(figsize=(30, 30))
-    for col_idx in range(len(data.columns)):
-        # 6행 2열 서브플롯에 각 feature 박스플롯 시각화
-        plt.subplot(6, 2, col_idx+1)
-        # flierprops: 빨간색 다이아몬드 모양으로 아웃라이어 시각화
-        plt.boxplot(data[data.columns[col_idx]], flierprops = dict(markerfacecolor = 'r', marker = 'D'))
-        # 그래프 타이틀: feature name
-        plt.title("Feature" + "(" + target_name + "):" + data.columns[col_idx], fontsize = 20)
-    # plt.savefig('../figure/boxplot_' + target_name + '.png')
-    plt.show()
-boxplot_vis(datasets,'white_wine')
+# def boxplot_vis(data, target_name):
+#     plt.figure(figsize=(30, 30))
+#     for col_idx in range(len(data.columns)):
+#         # 6행 2열 서브플롯에 각 feature 박스플롯 시각화
+#         plt.subplot(6, 2, col_idx+1)
+#         # flierprops: 빨간색 다이아몬드 모양으로 아웃라이어 시각화
+#         plt.boxplot(data[data.columns[col_idx]], flierprops = dict(markerfacecolor = 'r', marker = 'D'))
+#         # 그래프 타이틀: feature name
+#         plt.title("Feature" + "(" + target_name + "):" + data.columns[col_idx], fontsize = 20)
+#     # plt.savefig('../figure/boxplot_' + target_name + '.png')
+#     plt.show()
+# boxplot_vis(datasets,'white_wine')
 
-def remove_outlier(input_data):
-    q1 = input_data.quantile(0.25) # 제 1사분위수
-    q3 = input_data.quantile(0.75) # 제 3사분위수
-    iqr = q3 - q1 # IQR(Interquartile range) 계산
-    minimum = q1 - (iqr * 1.5) # IQR 최솟값
-    maximum = q3 + (iqr * 1.5) # IQR 최댓값
-    # IQR 범위 내에 있는 데이터만 산출(IQR 범위 밖의 데이터는 이상치)
-    df_removed_outlier = input_data[(minimum < input_data) & (input_data < maximum)]
-    return df_removed_outlier
-#############################################################
+# def remove_outlier(input_data):
+#     q1 = input_data.quantile(0.25) # 제 1사분위수
+#     q3 = input_data.quantile(0.75) # 제 3사분위수
+#     iqr = q3 - q1 # IQR(Interquartile range) 계산
+#     minimum = q1 - (iqr * 1.5) # IQR 최솟값
+#     maximum = q3 + (iqr * 1.5) # IQR 최댓값
+#     # IQR 범위 내에 있는 데이터만 산출(IQR 범위 밖의 데이터는 이상치)
+#     df_removed_outlier = input_data[(minimum < input_data) & (input_data < maximum)]
+#     return df_removed_outlier
+
+
 
 
 
@@ -119,7 +133,7 @@ x_test = scaler.transform(x_test)
 model = XGBClassifier(n_jobs = -1,
                      n_estimators = 2000,
                      learning_rate = 0.025,
-                     max_depth = 5,
+                     max_depth = 10,
                      min_child_weight = 10,
                      subsample = 1,
                      colsample_bytree = 1,
@@ -129,14 +143,12 @@ model = XGBClassifier(n_jobs = -1,
                      predictor='gpu_predictor',
                      gpu_id = 0)
 
+
 model.fit(x_train, y_train, verbose=1)
 
 
-model_scores = model.score(x_test, y_test)
-print("model_scores" , round(model_scores, 4))
+y_predict = model.predict(y_train)
+score = model.score(x_test, y_test)
+print('model score:', score)
+print('f1:', f1_score(y_test, y_predict, average='macro'))
 
-y_pred = model.predict(x_test)
-f1 = f1_score(y_test, y_pred, average='macro')
-print("f1_score :", f1)
-
-'''
