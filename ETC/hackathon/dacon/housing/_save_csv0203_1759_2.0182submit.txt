@@ -1,0 +1,9 @@
+
+========================저장시간 :0203_1759
+scaler : PowerTransformer()
+colsample_bytree :colsample_bytree
+learning_rate :learning_rate
+max_depth :max_depth
+n_estimators :n_estimators
+reg_lambda :reg_lambda
+subsample :subsample
