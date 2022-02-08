@@ -6,7 +6,7 @@ import tensorflow as tf
 (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
 #2.MODEL
-model = ak.ImageClassifier(overwrite=True, max_trials=2)
+model = ak.ImageClassifier(overwrite=True, max_trials=2) #모델 두번돌림
 
 #3.COMPILE
 model.fit(x_train, y_train, epochs=5)
