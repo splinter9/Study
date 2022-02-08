@@ -9,8 +9,9 @@ import tensorflow as tf
 model = ak.ImageClassifier(overwrite=True, max_trials=2)
 
 #3.COMPILE
-# model.fit(x_train, y_train, epochs=5)
-# results = model.evaluate(x_test, y_test)
-# print(results)
+model.fit(x_train, y_train, epochs=5)
 
+#4.EVALUATE
+results = model.evaluate(x_test, y_test)
+print(results)
 print(model.summary())
