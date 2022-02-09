@@ -9,7 +9,7 @@ gradient = lambda x: 2*x - 4  # 미분한 함수로 웨이트는 기울기
 
 x = 0.0  # 초기값
 epochs = 20
-learning_rate = 0.2
+learning_rate = 0.4
 
 print('step\t x\t f(x)')
 print("{:02d}\t {:6.5f}\t {:6.5f}\t".format(0, x, f(x)))
