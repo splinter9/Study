@@ -44,6 +44,7 @@ def create_hyperparameter():
 hyperparameters = create_hyperparameter()
 
 from tensorflow.keras.wrappers.scikit_learn import KerasClassifier
+# 텐서플로를 사이킷런 형태로 래핑해준다. 
 
 keras_model = KerasClassifier(build_fn = build_model, verbose = 1)
 
@@ -65,3 +66,6 @@ print('소요 시간:', end-start)
 from sklearn.metrics import accuracy_score
 y_pred = model.predict(x_test)
 print('accuracy_score :', accuracy_score(y_test, y_pred))
+
+
+# 가중치 
