@@ -76,7 +76,7 @@
 
 import pandas as pd
 import tensorflow as tf
-
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 # This function normalizes the dataset using min max scaling.
 # DO NOT CHANGE THIS CODE
@@ -187,18 +187,32 @@ def solution_model():
         # recurrent_dropout argument (you can alternatively set it to 0),
         # since it has not been implemented in the cuDNN kernel and may
         # result in much longer training times.
-        tf.keras.layers.Dense(N_FEATURES)
+        # tf.keras.layers.Conv1D(filters = 256, kernel_size = 5, padding = 'causal', activation = 'relu', input_shape = [None, 1]),
+        tf.keras.layers.Conv1D(filters = 64,kernel_size = 5, input_shape=([BATCH_SIZE,N_PAST, N_FEATURES])),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.LSTM(128),
+        tf.keras.layers.Dense(512, activation = 'relu'),
+        # tf.keras.layers.BatchNormalization(),
+        tf.keras.layers.Dense(256, activation = 'relu'),
+        tf.keras.layers.Dense(128, activation = 'relu'),
+        tf.keras.layers.Dense(1)
     ])
 
     # Code to train and compile the model
-    optimizer =  # YOUR CODE HERE
+    optimizer =  tf.keras.optimizers.Adam(learning_rate=0.001)# YOUR CODE HERE
     model.compile(
         # YOUR CODE HERE
+        loss='mae', optimizer = optimizer, metrics = ['mae']
     )
+    es = EarlyStopping(monitor='loss', patience=30, mode='auto')
+    rl = ReduceLROnPlateau(monitor='loss', patience=15, factor=0.1, verbose=1)
     model.fit(
         # YOUR CODE HERE
+        train_set, epochs = 1000, batch_size = 32, callbacks = [es, rl]
     )
-
+    #4. 평가, 예측
+    results = model.evaluate(valid_set)
+    print("mae : ", results)
     return model
 
 
