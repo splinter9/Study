@@ -111,7 +111,10 @@ def solution_model():
               verbose=1,
               callbacks=[earlystopping, reduce_lr, checkpoint]
               )
-
+    results = model.evaluate(validation_generator)
+    print("loss : ", results[0])
+    print("acc : ", results[1])
+    
     return model
 
 # Note that you'll need to save your model as a .h5 like this.
