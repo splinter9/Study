@@ -86,6 +86,8 @@ import zipfile
 
 import pandas as pd
 import tensorflow as tf
+from tensorflow.keras.callbacks import EarlyStopping
+
 
 
 # This function downloads and extracts the dataset to the directory that
@@ -187,7 +189,10 @@ def solution_model():
                                  n_past=N_PAST, n_future=N_FUTURE,
                                  shift=SHIFT)
 
+
+
     # Code to define your model.
+    # print(x_train.shape)#43200,7
     model = tf.keras.models.Sequential([
 
         # ADD YOUR LAYERS HERE.
@@ -208,15 +213,25 @@ def solution_model():
         # recurrent_dropout argument (you can alternatively set it to 0),
         # since it has not been implemented in the cuDNN kernel and may
         # result in much longer training times.
+        # tf.keras.layers.Dense(N_FEATURES, input_shape=(BATCH_SIZE, N_PAST, N_FEATURES), activation='relu'),
+        tf.keras.layers.LSTM(BATCH_SIZE, return_sequences=True, input_shape=(N_PAST, N_FEATURES)),
+        tf.keras.layers.Dense(N_FEATURES, input_shape=(BATCH_SIZE, N_PAST, N_FEATURES), activation='relu'),
+        tf.keras.layers.LSTM(60, return_sequences=True),
         tf.keras.layers.Dense(N_FEATURES)
     ])
 
     # Code to train and compile the model
-    optimizer =  # YOUR CODE HERE
-    model.compile(
+    optimizer = tf.keras.optimizers.Adam()# YOUR CODE HERE
+    # es = EarlyStopping(monitor='val_acc', mode='auto', patience=20)
+    model.compile(loss = 'mae', optimizer = optimizer, metrics = ['mae']
         # YOUR CODE HERE
     )
-    model.fit(
+    model.fit(train_set,
+        epochs = 10,
+        validation_data = valid_set,
+        # steps_per_epoch = len(list(train_set.as_numpy_iterator())),
+        # validation_steps = len(list(valid_set.as_numpy_iterator())),
+        batch_size =1
         # YOUR CODE HERE
     )
 
