@@ -34,30 +34,85 @@ import urllib.request
 import zipfile
 import tensorflow as tf
 from keras_preprocessing.image import ImageDataGenerator
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Conv2D, MaxPooling2D, Flatten
+from tensorflow.keras.layers import Dropout, BatchNormalization
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
 
 def solution_model():
-    url = 'https://storage.googleapis.com/download.tensorflow.org/data/rps.zip'
-    urllib.request.urlretrieve(url, 'rps.zip')
-    local_zip = 'rps.zip'
-    zip_ref = zipfile.ZipFile(local_zip, 'r')
-    zip_ref.extractall('tmp/')
-    zip_ref.close()
+    # url = 'https://storage.googleapis.com/download.tensorflow.org/data/rps.zip'
+    # urllib.request.urlretrieve(url, 'rps.zip')
+    # local_zip = 'rps.zip'
+    # zip_ref = zipfile.ZipFile(local_zip, 'r')
+    # zip_ref.extractall('tmp/')
+    # zip_ref.close()
 
-
+    #1. 데이터
     TRAINING_DIR = "tmp/rps/"
     training_datagen = ImageDataGenerator(
-    # YOUR CODE HERE)
+    # YOUR CODE HERE
+        rescale=1/255.0,
+        rotation_range=40,
+        width_shift_range=0.2,
+        height_shift_range=0.2,
+        zoom_range=0.2,
+        horizontal_flip=True,
+        fill_mode='nearest',
+        validation_split=0.1)
 
-    train_generator = # YOUR CODE HERE
+    train_generator = training_datagen.flow_from_directory(# YOUR CODE HERE
+        TRAINING_DIR,
+        target_size=(150, 150),
+        batch_size=64,
+        class_mode='categorical',
+        subset='training')
 
-
+    valid_generator = training_datagen.flow_from_directory(
+        TRAINING_DIR,
+        target_size=(150, 150),
+        batch_size=64,
+        subset='validation'
+    )
+    #2. 모델
     model = tf.keras.models.Sequential([
     # YOUR CODE HERE, BUT END WITH A 3 Neuron Dense, activated by softmax
+        tf.keras.layers.Conv2D(64, (3, 3), activation='relu', input_shape=(150, 150, 3)),
+        tf.keras.layers.MaxPooling2D(2, 2),     # (74, 74, 64)
+        tf.keras.layers.Conv2D(64, (3, 3), padding="same", activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(128, (3, 3), padding="same", activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Conv2D(256, (6, 6), padding="same", activation='relu'),
+        tf.keras.layers.MaxPooling2D(2, 2),
+        tf.keras.layers.Flatten(),
+        tf.keras.layers.Dropout(0.5),
+        tf.keras.layers.Dense(512, activation="relu"),
         tf.keras.layers.Dense(3, activation='softmax')
     ])
 
-    return model
+    #3. 컴파일, 훈련
+    model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['acc'])
 
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss',
+                                  patience=3,
+                                  factor=0.5,
+                                  verbose=1)
+    checkpoint = ModelCheckpoint("checkpoint.ckpt",
+                                 save_weights_only=True,
+                                 save_best_only=True,
+                                 monitor='val_loss',
+                                 verbose=1)
+    earlystopping = EarlyStopping(monitor='val_loss', mode='min', patience=3, verbose=1)
+    model.fit(train_generator,
+              steps_per_epoch=len(train_generator),
+              validation_data=(valid_generator),
+              validation_steps=len(valid_generator),
+              epochs=21,
+              verbose=1,
+              callbacks=[earlystopping, reduce_lr, checkpoint]
+              )
+
+    return model
 
 # Note that you'll need to save your model as a .h5 like this.
 # When you press the Submit and Test button, your saved .h5 model will
