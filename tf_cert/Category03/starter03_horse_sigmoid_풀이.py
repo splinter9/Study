@@ -96,3 +96,5 @@ if __name__ == '__main__':
     # model.save("mymodel.h5")
     model.save('./tf_cert/mymodel3.h5')
     
+    
+ # loss: [0.49247410893440247, 0.8289999961853027]
