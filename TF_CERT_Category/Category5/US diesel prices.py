@@ -209,6 +209,9 @@ def solution_model():
         # YOUR CODE HERE
         train_set, epochs=10000, validation_data=valid_set, callbacks=[es, lr]
     )
+    #4. 평가, 예측
+    results = model.evaluate(valid_set)
+    print("mae : ", results)
 
 
     return model
