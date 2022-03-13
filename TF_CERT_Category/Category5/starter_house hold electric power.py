@@ -234,8 +234,11 @@ def solution_model():
         batch_size =1
         # YOUR CODE HERE
     )
-
+    #4. 평가, 예측
+    results = model.evaluate(valid_set)
+    print("mae : ", results)
     return model
+
 
 
 # Note that you'll need to save your model as a .h5 like this.
