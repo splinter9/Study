@@ -7,8 +7,10 @@ node3 = tf.add(node1, node2)
 
 print(node3)
 
+# sess = tf.Session()
+sess = tf.compat.v1.Session()
+
 sess = tf.Session()
 print(sess.run([node1, node2]))
 print(sess.run(node3))
-
 
