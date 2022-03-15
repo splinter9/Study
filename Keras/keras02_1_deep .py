@@ -18,8 +18,11 @@ model.add(Dense(1))
 
 
 #3. 컴파일, 훈련
-model.compile(loss='mse', optimizer='adam') #loss값은 작을수록 좋다, loss에 값을 감축시키는 역할을 해줌(optimizer)
-model.fit(x, y, epochs=100, batch_size=1) #epochs 훈련횟수 #batch 한번의 batch마다 주어지는 데이터 샘플 size, batch는 나눠진 데이터셋 #interation은 epoch를 나누어서 실행하는 횟수
+model.compile(loss='mse', optimizer='adam') 
+model.fit(x, y, epochs=100, batch_size=1) 
+#loss값은 작을수록 좋다, loss에 값을 감축시키는 역할을 해줌(optimizer)
+#epochs 훈련횟수 #batch 한번의 batch마다 주어지는 데이터 샘플 size, batch는 나눠진 데이터셋 #interation은 epoch를 나누어서 실행하는 횟수
+
 
 #4. 평가, 예측
 loss = model.evaluate(x, y)
