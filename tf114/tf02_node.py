@@ -11,6 +11,6 @@ print(node3)
 sess = tf.compat.v1.Session()
 
 sess = tf.Session()
-print(sess.run([node1, node2]))
-print(sess.run(node3))
+print(sess.run([node1, node2])) # node1, node2 : [3.0, 4.0]
+print(sess.run(node3))          # node3 :  7.0
 
