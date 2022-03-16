@@ -1,11 +1,13 @@
 import tensorflow as tf
-print(tf.__version__)            # 2.7.0
-print(tf.executing_eagerly())    # True => 텐서플로2.0 에서는 즉시실행 가능
+print(tf.__version__)   # 1.14.0
+print(tf.executing_eagerly())   # False
 
-tf.compat.v1.disable_eager_execution()
+# 즉시실행모드*****    => 텐서플로우2부터는 디폴트로 되어있기때문에 eager(즉시실행모드)를 사용하지 않음
+tf.compat.v1.disable_eager_execution()  # 즉시실행모드 OFF!!
 
-print(tf.executing_eagerly())    # Fales
+print(tf.executing_eagerly())    # False
 
-hello = tf.constant("hello world")
+hello = tf.constant("Hello World")
 
-print(hello)
+sess = tf.compat.v1.Session()
+print(sess.run(hello))    # b'Hello World'
