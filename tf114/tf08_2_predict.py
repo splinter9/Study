@@ -57,16 +57,13 @@ for step in range(2001):
         print(step,loss_val,w_val,b_val)
 
 
+#4. 예측
+predict = x_test * w_val + b_val      # predict = model.predict
 
+print("[4] 예측 : " , sess.run(predict, feed_dict={x_test:[4]}))
+print("[5,6] 예측 : " , sess.run(predict, feed_dict={x_test:[5,6]}))
+print("[6,7,8] 예측 : " , sess.run(predict, feed_dict={x_test:[6,7,8]}))
 
-predict = x_test * w + b
-print(sess.run(predict, feed_dict={x_test:[5,6]}))
 sess.close()
 
 
-############### 실습과제 예시 #################
-
-x_data = [6,7,8]
-x_test = tf.compat.v1.placeholder(tf.float32, shape=[None])
-
-y_predict = x_test * w_val
