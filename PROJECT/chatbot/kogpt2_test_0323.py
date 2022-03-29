@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import argparse
 import logging
 
@@ -242,3 +243,6 @@ if __name__ == "__main__":
     if args.chat:
         model = KoGPT2Chat.load_from_checkpoint(args.model_params)
         model.chat()
+        
+        
+        
