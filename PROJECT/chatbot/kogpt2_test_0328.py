@@ -171,8 +171,6 @@ print ("학습 종료")
 PATH = 'C:\\Users\\bitcamp\\Desktop\\TP\\'
 torch.save(model.state_dict(), PATH + 'model1.pt')
 
-
-'''
 sent = '0'
 with torch.no_grad():
     while 1:
@@ -189,4 +187,6 @@ with torch.no_grad():
                 break
             a += gen.replace("▁", " ")
         print("유희지희 > {}".format(a.strip()))
-'''
+
+        
+        
