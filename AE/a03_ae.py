@@ -1,3 +1,4 @@
+
 # 앞뒤가 똑같은 autoencoder
 # 딥하게 구성
 # 2개의 모델을 구성하는데 하나는 기본적인 오토인코더
@@ -73,4 +74,6 @@ for i, ax in enumerate([ax6, ax7, ax8, ax9, ax10]):
     
 plt.tight_layout()
 plt.show()
+    
+
     
