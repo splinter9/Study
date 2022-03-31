@@ -1,3 +1,5 @@
+# 전역풀링
+
 from ast import Global
 import numpy as np 
 import pandas as pd
