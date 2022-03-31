@@ -181,3 +181,7 @@ with torch.no_grad():
                 break
             a += gen.replace("▁", " ")
         print("유희지희 > {}".format(a.strip()))
+        
+
+        
+        
