@@ -1,45 +1,43 @@
 # 앞뒤가 똑같은
+# 딥하게 구성
+# 2개의 모델을 구성하는데
 
-from base64 import encode
-from typing import Sequence
 import numpy as np
 from tensorflow.keras.datasets import mnist
 from tensorflow.python.keras import activations
 
-#1. DATA
+#1. 데이터
 (x_train, _), (x_test, _) = mnist.load_data()
 
-x_train = x_train.reshape(60000, 784).astype('float')/255
+x_train = x_train.reshape(60000,784).astype('float')/255
 x_test = x_test.reshape(10000, 784).astype('float')/255
 
-
-#2. MODEL
-
+#2. 모델
 from tensorflow.keras.models import Model, Sequential
 from tensorflow.keras.layers import Dense, Input
 
-def autoencoder(hidden_layer_size):
+def autoencoder1(hidden_layer_size):
     model = Sequential()
     model.add(Dense(units = hidden_layer_size, input_shape = (784,), activation = 'relu')) # units = output
     model.add(Dense(units = 784, activation = 'sigmoid'))
     return model
 
-# def autoencoder(hidden_layer_size):
-#     model = Sequential([
-#     Dense(units = hidden_layer_size, input_shape = (784,), activation = 'relu'), # 함수 위아래 똑같음.
-#     Dense(units = 784, activation = 'sigmoid')
-#     ])
-#     return model
+def autoencoder2(hidden1, hidden2, hidden3, hidden4):
+    model = Sequential()
+    model.add(Dense(units = hidden1, input_shape = (784,), activation = 'relu')) 
+    model.add(Dense(units = hidden2, activation = 'relu'))
+    model.add(Dense(units = hidden3, activation = 'relu'))
+    model.add(Dense(units = hidden4, activation = 'relu'))
+    model.add(Dense(units = 784, activation = 'sigmoid'))
+    return model
 
-model = autoencoder(hidden_layer_size= 32)
+model = autoencoder2(64,32,16,8)
 
+#3. 컴파일, 훈련
+model.compile(loss = 'mse', optimizer = 'adam')
+model.fit(x_train, x_train, epochs = 20)
 
-#3. COMPILE
-model.compile(loss = 'mse', optimizer='adam')
-model.fit(x_train, x_train , epochs=20)
-
-
-#4. PREDICT
+#4. 평가, 예측
 output = model.predict(x_test)
 
 # import matplotlib.pyplot as plt 
@@ -70,4 +68,4 @@ for i, ax in enumerate([ax6, ax7, ax8, ax9, ax10]):
     ax.set_yticks([])
 
 plt.tight_layout()
-plt.show()     
+plt.show()      
