@@ -1,5 +1,5 @@
 #########################################################
-############### 지역별 SOHO 폐업률 예측  #################
+############ 지역별 SOHO 폐업률 예측 Simple RNN ##########
 #########################################################  
 from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.layers import Dense, Input, LSTM
