@@ -209,3 +209,6 @@ min_val_acc, y_test_pred = train_keras(model,
 
 df_submission.target = y_test_pred.argmax(axis=-1)
 df_submission.to_csv(f"submission_{min_val_acc:.4f}.csv", index=False)
+
+
+
