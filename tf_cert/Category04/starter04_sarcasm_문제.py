@@ -60,3 +60,5 @@ def solution_model():
 if __name__ == '__main__':
     model = solution_model()
     model.save("mymodel.h5")
+
+    
