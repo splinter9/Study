@@ -12,6 +12,8 @@
 # at least once in this category before you finally submit your exam,
 # otherwise you will score zero for this category.
 # ======================================================================
+
+
 # QUESTION
 #
 # Build and train a neural network to predict sunspot activity using
