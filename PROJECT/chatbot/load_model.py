@@ -16,7 +16,7 @@ koGPT2_TOKENIZER = PreTrainedTokenizerFast.from_pretrained("skt/kogpt2-base-v2",
 
 
 # torch.save(model.state_dict(), PATH + 'model.pt')
-PATH1 = 'C:\\Users\\비트캠프\\Desktop\\model\\'
+PATH1 = 'C:\\Users\\비트캠프\\Desktop\\model\\' # 
 
 model = GPT2LMHeadModel.from_pretrained('skt/kogpt2-base-v2')
 model.load_state_dict(torch.load(PATH1 + 'Data50000_EPOCH10.pt'))
