@@ -69,3 +69,5 @@ print('accuracy_score :', accuracy_score(y_test, y_pred))
 
 
 # 가중치 
+
+
