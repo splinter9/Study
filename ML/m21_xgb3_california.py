@@ -3,9 +3,9 @@ from xgboost import XGBClassifier, XGBRegressor
 from sklearn.datasets import fetch_california_housing
 from sklearn.preprocessing import MinMaxScaler, StandardScaler
 from sklearn.preprocessing import RobustScaler, MaxAbsScaler
-from sklearn.preprocessing import QuantileTransformer #
-from sklearn.preprocessing import PowerTransformer    #
-from sklearn.preprocessing import PolynomialFeatures  #
+from sklearn.preprocessing import QuantileTransformer 
+from sklearn.preprocessing import PowerTransformer    
+from sklearn.preprocessing import PolynomialFeatures  
 
 from sklearn.model_selection import learning_curve, train_test_split
 from sklearn.metrics import r2_score, accuracy_score
