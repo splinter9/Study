@@ -2,7 +2,7 @@
 import numpy as np
 from sklearn.datasets import load_iris
 
-#1.데이터
+# 1.데이터
 
 datasets = load_iris()
 #print(datasets.DESCR)
@@ -32,7 +32,7 @@ print(x_test.shape, y_test.shape) #(30, 4) (30, 3)
 
 
 
-#2. 모델구성
+# 2.모델구성
 # from tensorflow.keras.models import Sequential
 # from tensorflow.keras.layers import Dense
 from sklearn.svm import LinearSVC
@@ -47,7 +47,7 @@ from sklearn.svm import LinearSVC
 model = LinearSVC() #기본구성 ()안에 
 
 
-#3. 컴파일, 훈련
+# 3.컴파일, 훈련
 
 #import time
 #start = time.time()
@@ -63,7 +63,7 @@ model.fit(x_train, y_train)
 #print("걸린시간:" , round(end, 3), '초')
 
 
-#4. 평가, 예측
+# 4. 평가, 예측
 # loss = model.evaluate(x_test, y_test) 
 # print('loss : ', loss[0])
 # print('acccuracy: ', loss[1])    
