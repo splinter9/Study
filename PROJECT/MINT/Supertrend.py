@@ -1,6 +1,8 @@
-# //@version=4
-study("Supertrend", overlay = true, format=format.price, precision=2, resolution="")
+### 파인스크립트 ###
+#### 슈퍼트랜드 ####
 
+//@version=4
+study("Supertrend", overlay = true, format=format.price, precision=2, resolution="")
 Periods = input(title="ATR Period", type=input.integer, defval=10)
 src = input(hl2, title="Source")
 Multiplier = input(title="ATR Multiplier", type=input.float, step=0.1, defval=3.0)
