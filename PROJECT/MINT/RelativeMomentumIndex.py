@@ -1,6 +1,8 @@
+### 파인스크립트 ###
+
 # 상대모멘텀지수
 
-# //@version=3
+//@version=3
 // Copyright (c) 2018-present, Alex Orekhov (everget)
 // Relative Momentum Index script may be freely distributed under the MIT license.
 study("Relative Momentum Index", shorttitle="RMI")
