@@ -1,9 +1,11 @@
-# //@version=4
+### 파인스크립트 ###
 
-# // This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-# // © RezzaHmt
+//@version=4
 
-# //...DMF...
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © RezzaHmt
+
+//...DMF...
 study("Dynamic Money Flow", "DMF", format=format.volume, precision=2, resolution="")
 
 mode                = input("Index", "Mode", options=["Index", "Cumulative"])
