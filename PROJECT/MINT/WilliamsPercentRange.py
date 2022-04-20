@@ -1,4 +1,6 @@
-# //@version=5
+### 파인스크립트 ###
+
+//@version=5
 indicator("Williams Percent Range", shorttitle="Williams %R", format=format.price, precision=2, timeframe="", timeframe_gaps=true)
 length = input(title="Length", defval=14)
 src = input(close, "Source")
