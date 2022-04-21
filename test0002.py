@@ -1,15 +1,3 @@
-print("hello world")
-
-a=0.1
-b=0.2
-print(a+b) # 0.3 ???
- 
-import tensorflow as tf
-from tensorflow.python.keras.engine import sequential
-print(tf.__version__)
-
-
-#import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 import numpy as np
