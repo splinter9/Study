@@ -2,8 +2,8 @@ print("hello world")
 
 a=0.1
 b=0.2
-print(a+b)
-
+print(a+b) # 0.3 ???
+ 
 import tensorflow as tf
 from tensorflow.python.keras.engine import sequential
 print(tf.__version__)
