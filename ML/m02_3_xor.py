@@ -10,12 +10,15 @@ y_data = [0,1,1,0]
 # [0,0] -> [0] 
 # [0,1] -> [1] ... [1,1] ->[1]
 
+
 #2. MODEL
 #model = LinearSVC()
 model = Perceptron()
 
+
 #3. FIT
 model.fit(x_data, y_data)
+
 
 #4. PREDICT
 y_predict = model.predict(x_data)
@@ -24,3 +27,4 @@ results = model.score(x_data, y_data)
 print(results)
 acc = accuracy_score(y_data, y_predict)
 print('accuracy_score:', acc)
+
