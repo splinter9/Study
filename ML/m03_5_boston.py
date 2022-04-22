@@ -24,9 +24,13 @@ x_train, x_test, y_train, y_test = train_test_split(x, y,
 # model = LinearSVC()
 # model = SVC()
 # model = KNeighborsClassifier()
+# model = KNeighborsRegressor()
 # model = LogisticRegression()
+# model = LinearRegression()
 # model = DecisionTreeClassifier()
-model = RandomForestClassifier()
+# model = DecisionTreeRegressor()
+# model = RandomForestClassifier()
+model = RandomForestRegressor()
 
 #3. 훈련
 model.fit(x_train, y_train)
@@ -34,14 +38,28 @@ model.fit(x_train, y_train)
 #4. 평가, 예측
 result = model.score(x_test, y_test)    # score는 자동으로 맞춰서 반환해줌; 여기서 반환해주는건 'accuracy' (분류모델이기 때문에)
 
+
 y_predict = model.predict(x_test)
-acc = accuracy_score(y_test, y_predict)
+
+r2 = r2_score(y_test, y_predict)
+# print('r2스코어 : ', r2)
 
 # print("Perceptron : ", result)
 # print("LinearSVC : ", result)
 # print("SVC : ", result)
 # print("KNeighborsClassifier : ", result)
+# print("KNeighborsRegressor : ", result)
 # print("LogisticRegression : ", result)
+# print("LinearRegression : ", result)
 # print("DecisionTreeClassifier : ", result)
-print("RandomForestClassifier : ", result)
+# print("DecisionTreeRegressor : ", result)
+# print("RandomForestClassifier : ", result)
+print("RandomForestRegressor : ", result)
 
+
+'''
+KNeighborsRegressor :  0.5900872726222293
+LinearRegression :  0.8111288663608656
+DecisionTreeRegressor :  0.7816997457488578
+RandomForestRegressor :  0.911575025432474
+'''
