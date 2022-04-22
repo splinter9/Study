@@ -14,10 +14,8 @@ y_data = [0,0,0,1]
 # model = LinearSVC()
 model = Perceptron()
 
-
 # 3. FIT
 model.fit(x_data, y_data)
-
 
 # 4. PREDICT
 y_predict = model.predict(x_data)
