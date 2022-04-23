@@ -13,6 +13,7 @@ y_data = [0,1,1,0]
 # [0,0] -> [0] 
 # [0,1] -> [1] ... [1,1] ->[1]
 
+
 #2. MODEL
 # model = LinearSVC()
 # model = Perceptron()
@@ -25,12 +26,14 @@ model.add(Dense(1, input_dim=2, activation='sigmoid'))
 model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['acc'])
 model.fit(x_data, y_data, batch_size=1, epochs=100)
 
+
 #4. PREDICT
 y_predict = model.predict(x_data)
 results = model.evaluate(x_data, y_data)
 
 print(x_data, "의 예측결과: ", y_predict)
 print('metrics_acc:' , results[1])
+
 
 # acc = accuracy_score(y_data, y_predict)
 # print('accuracy_score:', acc)
