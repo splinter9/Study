@@ -4,6 +4,8 @@ git clone --recurse-submodules https://github.com/haven-jeon/KoGPT2-chatbot.git
 cd KoGPT2-chatbot
 pip install -r requirements.txt 
 '''
+
+
 # GPT2LMHeadModel test
 
 # import torch
