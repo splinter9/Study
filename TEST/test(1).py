@@ -29,7 +29,7 @@ dataset = pd.read_csv(path + "SOHO_DATA_T.csv")
 
 use_dataset = dataset.drop(['STD_YM','CTPV_NM','BLCK_SP_CD','CTPV_CD','ONW_HOUS_RATIO','PLU_HOUS_RATIO','APT_RES_RATIO'],axis=1).values 
 
-#print(use_dataset.shape)   #(187, 38)
+# print(use_dataset.shape)   #(187, 38)
 print(use_dataset)
 
 x,y = split_xy(use_dataset,3,1)
@@ -50,14 +50,14 @@ x_train, x_test, y_train, y_test = train_test_split(x,y,
 print(x_train.shape, y_train.shape) #(121, 11, 38) (121, 3, 37286)
 print(x_test.shape, y_test.shape) #(53, 11, 38) (53, 3, 37286)
 
-#데이터표준화
+# 데이터표준화
 # mean = np.mean(x_train, axis=0)
 # std = np.sdt(x_train, axis=0)
 
 # x_train = (x_train - mean) / std
 # x_test = (x_test - mean) / std
 
-#검증데이터셋
+# 검증데이터셋
 # x_train, x_val, y_train, y_val = train_test_split(x_train, y_train, test_size=0.3, random_state=42)
 
 # scaler = StandardScaler()         
@@ -78,17 +78,17 @@ model.add(Dense(3))
 model.summary()
 
 
-#3. 컴파일, 훈련
+# 3. 컴파일, 훈련
 model.compile(loss='mae', optimizer = 'adam', metrics=['accuracy'])
  
 from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint
 es = EarlyStopping(monitor='val_loss', patience=50, mode='auto',verbose=1, restore_best_weights=True)
-#mcp = ModelCheckpoint (monitor = 'val_loss', mode = 'min', verbose = 1, save_best_only=True,
+# mcp = ModelCheckpoint (monitor = 'val_loss', mode = 'min', verbose = 1, save_best_only=True,
 #                        filepath = './_ModelCheckPoint/keras27_1_MCP.hdf5')
 model.fit(x_train, y_train, epochs=500, batch_size=32, validation_split=0.3, callbacks=[es])
 
 
-#4. 평가, 예측
+# 4. 평가, 예측
 loss = model.evaluate(x_test, y_test)
 acc = model.evaluate(x_test, y_test)[1]
 print("loss, acc : ", loss)
