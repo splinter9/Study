@@ -4,6 +4,7 @@ from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler, Ma
 import numpy as np
 
 (x_train, y_train), (x_test, y_test) = cifar100.load_data()
+
 # print(x_train.shape, y_train.shape)   # (50000, 32, 32, 3) (50000, 1)
 # print(x_test.shape, y_test.shape)     # (10000, 32, 32, 3) (10000, 1)
 # print(np.unique(y_train, return_counts=True))
@@ -20,9 +21,9 @@ x_train, x_test, y_train, y_test = train_test_split(x_train, y_train,
 # print(x_train.shape, y_train.shape)  # (40000, 32, 32, 3) (40000, 10)
 # print(x_test.shape, y_test.shape)   # (10000, 32, 32, 3) (10000, 10) 
 
-#scaler = MinMaxScaler()
-#scaler = StandardScaler()
-#scaler = RobustScaler()
+# scaler = MinMaxScaler()
+# scaler = StandardScaler()
+# scaler = RobustScaler()
 scaler = MaxAbsScaler()
 
 n = x_train.shape[0]
@@ -33,10 +34,10 @@ x_train = x_train_transform.reshape(x_train.shape)
 m = x_test.shape[0]
 x_test = scaler.transform(x_test.reshape(m,-1)).reshape(x_test.shape)
 
-#x_test_transform = scaler.transform(x_test.reshape(m,-1))
-#x_test = x_test_transform.reshape(x_test.shape)
+# x_test_transform = scaler.transform(x_test.reshape(m,-1))
+# x_test = x_test_transform.reshape(x_test.shape)
 
-#2. 모델구성
+# 2. 모델구성
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D
 
@@ -52,7 +53,7 @@ model.add(Dense(32, activation='relu'))
 model.add(Dropout(0.2)) 
 model.add(Dense(100, activation='softmax'))
 
-#3. 컴파일, 훈련
+# 3. 컴파일, 훈련
 from tensorflow.keras.optimizers import Adam, Adadelta, Adagrad, Adamax, RMSprop, SGD, Nadam
 
 learning_rate = 0.0005
@@ -68,17 +69,16 @@ start = time.time()
 model.fit(x_train, y_train, epochs=1000, batch_size=32, verbose=1, validation_split=0.2, callbacks=[es, reduce_lr]) 
 end = time.time()
 
-#4. 평가, 예측
+# 4. 평가, 예측
 loss, acc = model.evaluate(x_test, y_test)
 print('learning_rate : ', learning_rate)
 print('loss : ', round(loss,4))
 print('accuracy : ', round(acc,4))
 print('걸린시간 :', round(end - start,4))
 
+
 '''
  995/1000 [============================>.] - ETA: 0s - loss: 2.5370 - accuracy: 0.3049
 Epoch 00036: ReduceLROnPlateau reducing learning rate to 0.0001250000059371814.  ##
-
-
 
 '''
